@@ -93,6 +93,10 @@ Das Programm erzeugt:
 - **Visualisierungen**: Matplotlib- und Plotly-Grafiken zur Analyse
 - **Datendateien**: Berechnete Power Duration Curves als CSV (optional)
 
+Im Ordner data/fig/ zu finden:
+
+![alt text](data/fig/Power_Curve.png)
+
 ## 📊 Beispiel-Workflow
 
 ```python
