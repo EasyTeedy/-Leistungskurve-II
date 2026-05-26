@@ -12,6 +12,7 @@ def main():
     except FileNotFoundError:
         print(f"Error: The file '{csv_filename}' could not be found!")
         return
+    
 
     # Clean up column names by stripping any accidental leading/trailing whitespaces
     df.columns = df.columns.str.strip()
