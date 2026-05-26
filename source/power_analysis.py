@@ -52,7 +52,7 @@ def calculate_power_curve(
 
     # Plot, save, and display the chart
     if plot_curve:
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(15, 6))
         plt.plot(
             power_curve_df["Zeit_Sekunden"],
             power_curve_df["Leistung_Watt"],
@@ -114,8 +114,8 @@ def calculate_power_curve(
         plt.tight_layout()
 
         # Save image file to repository folder for README integration
-        plt.savefig("screenshot.png", dpi=300)
-        print("-> 'screenshot.png' successfully created.")
+        plt.savefig("data/fig/Power_Curve.png", dpi=300)
+        print("-> 'Power_Curve.png' successfully created.")
 
         # Display interactive local window panel
         print("-> Opening interactive plot window...")
