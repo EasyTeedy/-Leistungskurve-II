@@ -96,34 +96,8 @@ def plot_power_curve(power_curve_df, color):
     plt.show()
 
 
-def read_and_plot_power_curve():
-    csv_filename = "data/activities/activity.csv"
 
-    try:
-        df = pd.read_csv(csv_filename)
-    except FileNotFoundError:
-        print(f"Error: The file '{csv_filename}' could not be found!")
-        return
-
-    df.columns = df.columns.str.strip()
-    
-    # Repariert die defekte Zeitachse aus der CSV-Datei
-    df["Duration"] = range(1, len(df) + 1)
-
-    if "PowerOriginal" not in df.columns:
-        print("Error: The column 'PowerOriginal' is missing from the CSV file.")
-        print("Available columns are:", list(df.columns))
-        return
-
-    power_series = df["PowerOriginal"]
-    time_step = 1 
-
-    print(
-        f"Processing power duration curve for {len(power_series)} seconds of data..."
-    )
-
-    result_df = power_curve_analysis(power_data=power_series, time_resolution_sec=time_step)
-
+def output_terminal_summary(power_series, result_df):
     intervals = {
         "5 Seconds": 5,
         "10 Seconds": 10,
@@ -152,4 +126,36 @@ def read_and_plot_power_curve():
     print("...")
     print(result_df.tail(5)) 
 
+
+
+
+def read_and_plot_power_curve():
+    csv_filename = "data/activities/activity.csv"
+
+    try:
+        df = pd.read_csv(csv_filename)
+    except FileNotFoundError:
+        print(f"Error: The file '{csv_filename}' could not be found!")
+        return
+
+    df.columns = df.columns.str.strip()
+    
+    # Repariert die defekte Zeitachse aus der CSV-Datei
+    df["Duration"] = range(1, len(df) + 1)
+
+    if "PowerOriginal" not in df.columns:
+        print("Error: The column 'PowerOriginal' is missing from the CSV file.")
+        print("Available columns are:", list(df.columns))
+        return
+
+    power_series = df["PowerOriginal"]
+    time_step = 1 
+
+    print(
+        f"Processing power duration curve for {len(power_series)} seconds of data..."
+    )
+
+    result_df = power_curve_analysis(power_data=power_series, time_resolution_sec=time_step)
+
+    output_terminal_summary(power_series, result_df)
     plot_power_curve(result_df, color="green")

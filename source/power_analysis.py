@@ -53,6 +53,8 @@ def power_curve_analysis(power_data, time_resolution_sec=1):
     durations_sec = []
 
     # Calculate rolling maximum averages for every possible duration window
+    # druchschnitt von 1 Sekunde, 2 Sekunden, ..., bis zur gesamten Fahrtzeit 
+    # Von diesen Mittelwert sammlung wird dann der Maxwert genommen und ist dann der representante Wert der jeweiligen Dauer
     for window_size in range(1, n_samples + 1):
         duration = window_size * time_resolution_sec
 
