@@ -120,7 +120,6 @@ def calculate_power_curve(
         # Display interactive local window panel
         print("-> Opening interactive plot window...")
         plt.show()
-
         plt.close()
 
     return power_curve_df
