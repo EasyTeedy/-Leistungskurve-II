@@ -1,1 +1,1 @@
-# Dies das Annanas für Files einlesen
+# Utility functions for file handling

@@ -5,7 +5,7 @@ import pandas as pd
 
 
 def format_time(seconds):
-    """Format seconds to HH:MM:SS format."""
+    """Helper function to format seconds into HH:MM:SS."""
     hours = seconds // 3600
     minutes = (seconds % 3600) // 60
     secs = seconds % 60
@@ -13,25 +13,26 @@ def format_time(seconds):
 
 
 def get_perfect_log_time_ticks(max_time):
-    """Generate logarithmic-scale time ticks for any data duration."""
-    # Predefined time intervals in seconds
+    """Generates clean, log-spaced time ticks tailored to any data duration."""
+    # Vordefinierte, glatte Zeitstempel (in Sekunden), die log-ähnlich wachsen
     potential_ticks = [
-        1, 2, 5, 10, 20, 30,         # seconds
-        60, 120, 300, 600, 1200,     # minutes (1m, 2m, 5m, 10m, 20m)
+        1, 2, 5, 10, 20, 30,         # Sekunden
+        60, 120, 300, 600, 1200,     # Minuten (1m, 2m, 5m, 10m, 20m)
         1800, 3600, 7200, 14400,     # 30m, 1h, 2h, 4h
-        21600, 43200                 # 6h, 12h
+        21600, 43200                 # 6h, 12h (für Langstrecken)
     ]
     
-    # Keep ticks within data duration
+    # 1. Nur Ticks behalten, die innerhalb der echten Fahrdauer liegen
     ticks = [t for t in potential_ticks if t < max_time]
     
-    # Reduce ticks if too many (target: 12 ticks for readability)
-    if len(ticks) > 15:
-        indices = np.unique(np.linspace(0, len(ticks)-1, num=12, dtype=int))
+    # 2. Falls es bei langen Fahrten zu viele Ticks werden, dünnen wir sie geometrisch aus
+    if len(ticks) > 6:
+        indices = np.unique(np.geomspace(1, len(ticks), num=5, dtype=int)) - 1
         ticks = [ticks[i] for i in indices]
-    
-    # Always include the data end point
+        
+    # 3. Das exakte Ende der CSV-Daten IMMER als letzten Tick anhängen
     ticks.append(max_time)
+    
     return np.unique(ticks).astype(int)
 
 
@@ -49,12 +50,12 @@ def plot_power_curve(power_curve_df, color):
         line_color = "#b342b3"
         fill_color = "#f5f5f5"
 
-    plt.figure(figsize=(18, 7))
+    plt.figure(figsize=(15, 6))
     
-    # Use logarithmic scale for X-axis
+    # Schaltet die X-Achse auf eine echte, mathematische Log-Skala um
     plt.xscale('log')
 
-    # Plot power curve
+    # Plot der eigentlichen Watt-Kurve
     plt.plot(
         power_curve_df["Zeit_Sekunden"],
         power_curve_df["Leistung_Watt"],
@@ -63,7 +64,7 @@ def plot_power_curve(power_curve_df, color):
         label="Today",
     )
 
-    # Add background fill
+    # Hintergrund-Fläche füllen
     plt.fill_between(
         power_curve_df["Zeit_Sekunden"],
         power_curve_df["Leistung_Watt"],
@@ -71,16 +72,18 @@ def plot_power_curve(power_curve_df, color):
         alpha=0.5,
     )
 
-    # Format X-axis with custom time labels
+    # --- AUTOMATISCHE LOG-X-ACHSEN-FORMATIERUNG ---
     max_time = power_curve_df["Zeit_Sekunden"].max()
+    
+    # Hol dir die glatten, vordefinierten Log-Ticks
     tick_positions = get_perfect_log_time_ticks(max_time)
+    
+    # Formatiere die Sekunden-Ticks in gut lesbare HH:MM:SS Strings
     tick_labels = [format_time(t) for t in tick_positions]
     
-    # Apply tick labels and disable minor ticks
-    ax = plt.gca()
-    ax.set_xticks(tick_positions)
-    ax.set_xticklabels(tick_labels, rotation=45)
-    ax.xaxis.set_minor_locator(plt.NullLocator())
+    # Labels an der Achse setzen
+    plt.xticks(tick_positions, tick_labels, rotation=45)
+    # -----------------------------------------------
 
     # Chart styling and labeling
     plt.title("Power Curve Analysis", fontsize=14, pad=15)
@@ -137,7 +140,7 @@ def read_and_plot_power_curve():
 
     df.columns = df.columns.str.strip()
     
-    # Set duration column from row indices
+    # Repariert die defekte Zeitachse aus der CSV-Datei
     df["Duration"] = range(1, len(df) + 1)
 
     if "PowerOriginal" not in df.columns:
