@@ -93,7 +93,7 @@ def plot_power_curve(power_curve_df, color):
     plt.tight_layout() 
 
     plt.savefig("data/fig/power_curve_chart.png")
-    plt.show()
+    plt.close()
 
 
 
