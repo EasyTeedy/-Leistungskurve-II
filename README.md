@@ -112,6 +112,10 @@ Das Programm erzeugt:
 - **Visualisierungen**: Matplotlib-Grafiken zur Analyse
 - **Datendateien**: Berechnete Power Duration Curves als PNG im Ordner `data/fig/`
 
+**Beispiel-Ausgabe:**
+
+![Power Curve Visualization](data/fig/Power_Curve.png)
+
 ## 📊 Beispiel-Workflow
 
 ```python
