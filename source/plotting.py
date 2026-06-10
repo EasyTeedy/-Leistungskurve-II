@@ -1,15 +1,8 @@
 from source.power_analysis import power_curve_analysis
+from source.util import format_time, load_activity_csv, validate_power_data
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
-
-def format_time(seconds):
-    """Zeit in HH:MM:SS Format konvertieren."""
-    hours = seconds // 3600
-    minutes = (seconds % 3600) // 60
-    secs = seconds % 60
-    return f"{int(hours):02d}:{int(minutes):02d}:{int(secs):02d}"
 
 
 def get_perfect_log_time_ticks(max_time):
@@ -130,22 +123,21 @@ def read_and_plot_power_curve():
     csv_filename = "data/activities/activity.csv"
 
     try:
-        df = pd.read_csv(csv_filename)
-    except FileNotFoundError:
-        print(f"Error: The file '{csv_filename}' could not be found!")
+        df = load_activity_csv(csv_filename)
+    except (FileNotFoundError, ValueError) as e:
+        print(f"Fehler: {e}")
         return
 
-    df.columns = df.columns.str.strip()
-    
     # Duration-Spalte aus Zeilenindizes setzen
     df["Duration"] = range(1, len(df) + 1)
 
-    if "PowerOriginal" not in df.columns:
-        print("Error: The column 'PowerOriginal' is missing from the CSV file.")
-        print("Available columns are:", list(df.columns))
+    power_series = df["PowerOriginal"]
+    
+    # Daten validieren
+    if not validate_power_data(power_series):
+        print("Fehler: Power-Daten sind leer!")
         return
 
-    power_series = df["PowerOriginal"]
     time_step = 1 
 
     print(
