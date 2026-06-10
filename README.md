@@ -20,10 +20,11 @@ Das Tool verarbeitet CSV-Dateien mit Aktivitätsdaten und berechnet die **Power 
 
 Die erforderlichen Python-Pakete sind in `pyproject.toml` definiert:
 
-- `pandas` (≥3.0.3) – Datenverarbeitung und -analyse
-- `matplotlib` (≥3.10.9) – Visualisierung von Kurven
-- `plotly-express` (≥0.4.1) – Interaktive Grafiken
-- `numpy` (≥2.4.6) – Numerische Berechnungen
+- `pandas` (≥2.2.0, <3.0.0) – Datenverarbeitung und -analyse
+- `matplotlib` (≥3.8.0) – Visualisierung von Kurven
+- `plotly` (≥5.0.0) – Interaktive Grafiken
+- `numpy` (≥2.0.0) – Numerische Berechnungen
+- `nbformat` (≥5.10.0) – Notebook-Format-Unterstützung
 
 ## 🚀 Installation und Verwendung
 
@@ -62,13 +63,31 @@ Leistungskurve_2/
 ├── data/
 │   ├── activities/
 │   │   └── activity.csv       # Eingabe-Trainingsaktivitätsdaten
-│   ├── ekg_data/              # EKG-Daten (optional)
 │   └── fig/                   # Ausgabe-Diagramme und Visualisierungen
 └── source/
-    └── power_analysis.py      # Kernmodul für Leistungskurven-Berechnung
+    ├── power_analysis.py      # Kernmodul: Power-Kurven-Berechnung
+    ├── plotting.py            # Visualisierung mit Matplotlib und Plotly
+    └── util.py                # Utility-Funktionen (Dateihandling, Formatierung)
 ```
 
 ## 🔧 Funktionsweise
+
+### Module
+
+**`source/power_analysis.py`**
+- `power_curve_analysis()` – Berechnet die Power-Dauer-Kurve
+- Nutzt rollende Durchschnitte über alle möglichen Zeitfenster
+- Gibt eine DataFrame mit Zeit (Sekunden) und maximaler Leistung (Watt) zurück
+
+**`source/plotting.py`**
+- `plot_power_curve()` – Visualisiert die Leistungskurve mit Matplotlib
+- Logarithmische X-Achse für bessere Lesbarkeit
+- Farbcodierung und Styling für verschiedene Trainingstypen
+
+**`source/util.py`**
+- `load_activity_csv()` – Lädt und validiert CSV-Aktivitätsdaten
+- `validate_power_data()` – Prüft Datenqualität
+- `format_time()` – Konvertiert Sekunden in HH:MM:SS Format
 
 ### Dateneingang
 
@@ -80,39 +99,44 @@ Jede Zeile repräsentiert eine Messung im Abstand von 1 Sekunde.
 
 ### Datenverarbeitung
 
-1. **Laden**: CSV-Daten werden mit Pandas eingelesen
+1. **Laden**: CSV-Daten werden mit `util.load_activity_csv()` eingelesen
 2. **Bereinigung**: Spaltennamen werden gesäubert, fehlende Werte behandelt
-3. **Berechnung**: Rollende Durchschnitte für alle Zeitfenster werden berechnet
-4. **Generierung**: Eine DataFrame mit Zeit (Sekunden) und maximaler Leistung (Watt) wird erstellt
+3. **Berechnung**: `power_analysis.power_curve_analysis()` berechnet rollende Durchschnitte
+4. **Visualisierung**: `plotting.plot_power_curve()` erzeugt Grafiken
 
 ### Ausgabe
 
 Das Programm erzeugt:
 
 - **Konsolenausgabe**: Statistische Zusammenfassung der Leistungsdaten
-- **Visualisierungen**: Matplotlib- und Plotly-Grafiken zur Analyse
-- **Datendateien**: Berechnete Power Duration Curves als CSV (optional)
-
-Im Ordner data/fig/ zu finden:
-
-![alt text](data/fig/Power_Curve.png)
+- **Visualisierungen**: Matplotlib-Grafiken zur Analyse
+- **Datendateien**: Berechnete Power Duration Curves als PNG im Ordner `data/fig/`
 
 ## 📊 Beispiel-Workflow
 
 ```python
-# 1. CSV-Datei laden
-df = pd.read_csv("data/activities/activity.csv")
+# main.py nutzt diese Module automatisch:
 
-# 2. Leistungskurve berechnen
-power_curve = calculate_power_curve(
+# 1. CSV-Datei laden (util.py)
+from source.util import load_activity_csv
+
+df = load_activity_csv("data/activities/activity.csv")
+
+# 2. Leistungskurve berechnen (power_analysis.py)
+from source.power_analysis import power_curve_analysis
+
+power_curve = power_curve_analysis(
     power_data=df["PowerOriginal"],
-    time_resolution_sec=1,
-    plot_curve=True
+    time_resolution_sec=1
 )
 
-# 3. Ergebnisse anschauen
-print(power_curve.head())
+# 3. Visualisieren (plotting.py)
+from source.plotting import plot_power_curve
+
+plot_power_curve(power_curve, color="green")
 ```
+
+Die komplette Funktionalität wird durch Ausführung von `python main.py` aktiviert.
 
 ## 🛠️ Entwicklung
 
