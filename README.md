@@ -114,7 +114,7 @@ Das Programm erzeugt:
 
 **Beispiel-Ausgabe:**
 
-![Power Curve Visualization](data/fig/Power_Curve.png)
+![Power Curve Visualization](data/fig/power_curve_chart.png)
 
 ## 📊 Beispiel-Workflow
 
