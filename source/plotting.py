@@ -5,7 +5,7 @@ import pandas as pd
 
 
 def format_time(seconds):
-    """Format seconds to HH:MM:SS format."""
+    """Zeit in HH:MM:SS Format konvertieren."""
     hours = seconds // 3600
     minutes = (seconds % 3600) // 60
     secs = seconds % 60
@@ -13,24 +13,24 @@ def format_time(seconds):
 
 
 def get_perfect_log_time_ticks(max_time):
-    """Generate logarithmic-scale time ticks for any data duration."""
-    # Predefined time intervals in seconds
+    """Logarithmische Zeitachsen-Ticks generieren."""
+    # Vordefinierte Zeitintervalle in Sekunden
     potential_ticks = [
-        1, 2, 5, 10, 20, 30,         # seconds
-        60, 120, 300, 600, 1200,     # minutes (1m, 2m, 5m, 10m, 20m)
-        1800, 3600, 7200, 14400,     # 30m, 1h, 2h, 4h
+        1, 2, 5, 10, 20, 30,         # Sekunden
+        60, 120, 300, 600, 1200,     # Minuten
+        1800, 3600, 7200, 14400,     # Stunden
         21600, 43200                 # 6h, 12h
     ]
     
-    # Keep ticks within data duration
+    # Ticks innerhalb der Fahrtdauer behalten
     ticks = [t for t in potential_ticks if t < max_time]
     
-    # Reduce ticks if too many (target: 12 ticks for readability)
+    # Bei zu vielen Ticks reduzieren (Ziel: 12 Ticks)
     if len(ticks) > 15:
         indices = np.unique(np.linspace(0, len(ticks)-1, num=12, dtype=int))
         ticks = [ticks[i] for i in indices]
     
-    # Always include the data end point
+    # Endpunkt immer einschließen
     ticks.append(max_time)
     return np.unique(ticks).astype(int)
 
@@ -51,10 +51,10 @@ def plot_power_curve(power_curve_df, color):
 
     plt.figure(figsize=(18, 7))
     
-    # Use logarithmic scale for X-axis
+    # Logarithmische Skalierung für X-Achse
     plt.xscale('log')
 
-    # Plot power curve
+    # Power-Kurve plotten
     plt.plot(
         power_curve_df["Zeit_Sekunden"],
         power_curve_df["Leistung_Watt"],
@@ -63,7 +63,7 @@ def plot_power_curve(power_curve_df, color):
         label="Today",
     )
 
-    # Add background fill
+    # Hintergrund füllen
     plt.fill_between(
         power_curve_df["Zeit_Sekunden"],
         power_curve_df["Leistung_Watt"],
@@ -71,12 +71,12 @@ def plot_power_curve(power_curve_df, color):
         alpha=0.5,
     )
 
-    # Format X-axis with custom time labels
+    # X-Achse mit Zeit-Labels formatieren
     max_time = power_curve_df["Zeit_Sekunden"].max()
     tick_positions = get_perfect_log_time_ticks(max_time)
     tick_labels = [format_time(t) for t in tick_positions]
     
-    # Apply tick labels and disable minor ticks
+    # Ticks anwenden und Minor-Ticks deaktivieren
     ax = plt.gca()
     ax.set_xticks(tick_positions)
     ax.set_xticklabels(tick_labels, rotation=45)
@@ -137,7 +137,7 @@ def read_and_plot_power_curve():
 
     df.columns = df.columns.str.strip()
     
-    # Set duration column from row indices
+    # Duration-Spalte aus Zeilenindizes setzen
     df["Duration"] = range(1, len(df) + 1)
 
     if "PowerOriginal" not in df.columns:
