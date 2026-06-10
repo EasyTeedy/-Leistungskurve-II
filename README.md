@@ -165,3 +165,8 @@ pdm install --fresh
 
 **Hinweis**: Stellen Sie sicher, dass Ihre CSV-Aktivitätsdaten das Format und die erforderlichen Spalten erfüllen, bevor Sie das Programm ausführen.
 
+
+Gruppe Team:
+
+Cedric Rissi; Marven Otto
+
